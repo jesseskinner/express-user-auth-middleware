@@ -1,0 +1,41 @@
+{
+	"name": "express-user-auth-middleware",
+	"version": "0.0.1",
+	"description": "",
+	"main": "index.js",
+	"esm": {
+		"cjs": true
+	},
+	"nyc": {
+		"require": [
+			"esm"
+		]
+	},
+	"ava": {
+		"require": [
+			"esm"
+		]
+	},
+	"scripts": {
+		"test": "nyc --reporter=text ava"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/jesseskinner/express-user-auth-middleware.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/jesseskinner/express-user-auth-middleware/issues"
+	},
+	"homepage": "https://github.com/jesseskinner/express-user-auth-middleware#readme",
+	"devDependencies": {
+		"ava": "^3.0.0",
+		"esm": "^3.2.25",
+		"nyc": "^15.0.0"
+	},
+	"dependencies": {
+		"mysql2": "^2.1.0"
+	}
+}

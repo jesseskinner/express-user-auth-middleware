@@ -1,0 +1,14 @@
+TODO:
+☐ A way to create new users
+☐ Some tie-in to a database
+    - How generic can/should we be? Should it just use MySQL or have callbacks or what?
+☐ Some web API
+    - Rest? GraphQL? Form?
+☐ Login form
+☐ Signup form
+☐ Forgot password / password reset
+☐ Email validation
+☐ Sessions 
+    ☐ table in the database
+    ☐ tie session ID to user ID
+☐ Tests - Mocha
