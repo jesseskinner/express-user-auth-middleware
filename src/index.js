@@ -1,5 +1,5 @@
-function UserAuthMiddleware({ tableName = 'users', database }) {
-    return { createTable, getUserById, signup };
+export default function UserAuth({ tableName = 'users', database }) {
+    return { createTable, getUserById, createUser };
     
     async function createTable() {
         database.query(`
@@ -26,7 +26,7 @@ function UserAuthMiddleware({ tableName = 'users', database }) {
         return users[0];
 	}
 
-	async function signup({ email, password }) {
+	async function createUser({ email, password }) {
 		const res = await database.query(
 			`
                 INSERT INTO ${tableName}
@@ -41,5 +41,3 @@ function UserAuthMiddleware({ tableName = 'users', database }) {
 		return res[0].insertId;
 	}
 }
-
-export default UserAuthMiddleware;
