@@ -6,18 +6,8 @@
 	"esm": {
 		"cjs": true
 	},
-	"nyc": {
-		"require": [
-			"esm"
-		]
-	},
-	"ava": {
-		"require": [
-			"esm"
-		]
-	},
 	"scripts": {
-		"test": "nyc --reporter=text ava"
+		"test": "mocha test/**/*.test.js --require esm"
 	},
 	"repository": {
 		"type": "git",
@@ -31,11 +21,12 @@
 	},
 	"homepage": "https://github.com/jesseskinner/express-user-auth-middleware#readme",
 	"devDependencies": {
-		"ava": "^3.0.0",
+		"chai": "^4.2.0",
 		"esm": "^3.2.25",
-		"nyc": "^15.0.0"
+		"mocha": "^7.0.0"
 	},
 	"dependencies": {
+		"bcrypt": "^3.0.7",
 		"mysql2": "^2.1.0"
 	}
 }
