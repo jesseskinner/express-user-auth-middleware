@@ -36,25 +36,37 @@ describe('UserAuth', () => {
 
 			expect(id).to.be.greaterThan(0);
 		});
+
+		it('should fail if an email address is used twice', async () => {
+			await auth.createUser({ email, password });
+
+			let error;
+
+			try {
+				await auth.createUser({ email, password });
+			}catch(e) {
+				error = e;
+			}
+
+			expect(error.message).to.equal(auth.EMAIL_EXISTS)
+		});
 	});
 
-	describe('getUserById', () => {
+	describe('getEmailById', () => {
 		it('get a newly created user from the database', async () => {
 			const id = await auth.createUser({ email, password });
-			const user = await auth.getUserById(id);
+			const userEmail = await auth.getEmailById(id);
 
-			expect(user.email).to.deep.equal(email);
-			expect(user.password).to.be.undefined;
-			expect(user.id).to.equal(id);
+			expect(userEmail).to.equal(email);
 		});
 	});
 
 	describe('verifyUser', () => {
-		it('should return true if the email and password matches', async () => {
-			await auth.createUser({ email, password });
+		it('should return user ID if the email and password matches', async () => {
+			const id = await auth.createUser({ email, password });
 			const verified = await auth.verifyUser(email, password);
 
-			expect(verified).to.be.true;
+			expect(verified).to.equal(id);
 		});
 
 		it('should return false if the password does not match', async () => {

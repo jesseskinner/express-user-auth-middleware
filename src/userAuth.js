@@ -1,37 +1,57 @@
 import bcrypt from 'bcrypt';
 
-export default function UserAuth({ tableName = 'users', database, saltRounds = 10 }) {
-	return { createTable, getUserById, createUser, verifyUser };
+const EMAIL_EXISTS = 'Email address already exists';
+
+export default function UserAuth({
+	database,
+	tableName = 'users',
+	saltRounds = 10
+}) {
+	return { createTable, getEmailById, createUser, verifyUser, EMAIL_EXISTS };
 
 	async function createTable() {
 		database.query(`
-            CREATE TABLE IF NOT EXISTS ${tableName} (
+            CREATE TABLE IF NOT EXISTS \`${tableName}\` (
                 id INT(11) AUTO_INCREMENT NOT NULL,
                 email VARCHAR(255) NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-                PRIMARY KEY (id)
+                PRIMARY KEY (id),
+                UNIQUE (email)
             )
         `);
 	}
 
-	async function getUserById(id) {
+	async function getEmailById(id) {
 		const [users] = await database.query(
 			`
-                SELECT id, email
-                FROM ${tableName}
+                SELECT email
+                FROM \`${tableName}\`
                 WHERE ?
             `,
 			{ id }
 		);
 
-		return users[0];
+		return users[0].email;
 	}
 
 	async function createUser({ email, password }) {
+		const [users] = await database.query(
+			`
+                SELECT id
+                FROM \`${tableName}\`
+                WHERE ?
+            `,
+			{ email }
+		);
+
+		if (users && users.length === 1) {
+			throw new Error(EMAIL_EXISTS);
+		}
+
 		const res = await database.query(
 			`
-                INSERT INTO ${tableName}
+                INSERT INTO \`${tableName}\`
                 SET ?
             `,
 			{
@@ -47,20 +67,20 @@ export default function UserAuth({ tableName = 'users', database, saltRounds = 1
 		const [users] = await database.query(
 			`
                 SELECT id, password
-                FROM ${tableName}
+                FROM \`${tableName}\`
                 WHERE ?
             `,
 			{ email }
-        );
-        
-        if (!users || users.length === 0) {
-            return false;
-        }
+		);
 
-        if (await bcrypt.compare(password, users[0].password)) {
-            return true;
-        }
+		if (!users || users.length !== 1) {
+			return false;
+		}
 
-        return false;
+		if (await bcrypt.compare(password, users[0].password)) {
+			return users[0].id;
+		}
+
+		return false;
 	}
 }
