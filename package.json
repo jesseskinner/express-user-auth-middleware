@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"start": "node --require esm test/server.js",
 		"test": "mocha --require esm test/**/*.test.js"
 	},
 	"repository": {
@@ -18,12 +19,16 @@
 	},
 	"homepage": "https://github.com/jesseskinner/express-user-auth-middleware#readme",
 	"devDependencies": {
+		"axios": "^0.19.2",
 		"chai": "^4.2.0",
 		"esm": "^3.2.25",
 		"mocha": "^7.0.0"
 	},
 	"dependencies": {
 		"bcrypt": "^3.0.7",
+		"express": "^4.17.1",
+		"express-mysql-session": "^2.1.3",
+		"express-session": "^1.17.0",
 		"mysql2": "^2.1.0"
 	}
 }
