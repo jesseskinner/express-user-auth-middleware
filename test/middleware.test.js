@@ -22,7 +22,7 @@ describe('middleware', () => {
 
 		server = express()
 			.use(
-				new UserAuthMiddleware({
+				UserAuthMiddleware({
 					database,
 					secret: 'SECRET',
 					clearExpired: false,

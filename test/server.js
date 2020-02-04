@@ -6,27 +6,27 @@ import UserAuthMiddleware from '../src/middleware.js';
 	express()
 		.use(
 			express.static('test/html'),
-			new UserAuthMiddleware({
-                database: await getDatabase(),
-                secret: 'SECRET',
-                email: {
-                    verify: (to, verifyCode) => {
-                        console.log(
-                            'TODO: send email to ',
-                            to,
-                            ' with verify link ',
-                            verifyCode
-                        );
-                    },
-                    reset: (to, resetCode) => {
-                        console.log(
-                            'TODO: send reset email to ',
-                            to,
-                            ' with link ',
-                            resetCode
-                        );
-                    }
-                }
+			UserAuthMiddleware({
+				database: await getDatabase(),
+				secret: 'SECRET',
+				email: {
+					verify: (to, verifyCode) => {
+						console.log(
+							'TODO: send email to ',
+							to,
+							' with verify link ',
+							verifyCode
+						);
+					},
+					reset: (to, resetCode) => {
+						console.log(
+							'TODO: send reset email to ',
+							to,
+							' with link ',
+							resetCode
+						);
+					}
+				}
 			})
 		)
 		.listen(5000);

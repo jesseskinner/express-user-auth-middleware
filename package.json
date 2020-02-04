@@ -1,8 +1,8 @@
 {
 	"name": "express-user-auth-middleware",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "src/middleware.js",
 	"scripts": {
 		"start": "node --require esm test/server.js",
 		"test": "mocha --require esm test/**/*.test.js"
