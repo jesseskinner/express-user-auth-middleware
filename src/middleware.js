@@ -33,7 +33,9 @@ module.exports = function UserAuthMiddleware({
 			secret: secret,
 			store: new MySQLStore({ clearExpired }, database),
 			resave: false,
-			saveUninitialized: false
+			saveUninitialized: false,
+			unset: 'destroy',
+			cookie: { secure: process.env.NODE_ENV === 'production' }
 		}),
 		express.json()
 	);
@@ -94,9 +96,14 @@ module.exports = function UserAuthMiddleware({
 		res.json({ success: await resetPassword(email, token, password) });
 	});
 
+	app.post('/auth/logout', (req, res) => {
+		req.session = null;
+		res.end();
+	});
+
 	app.get('/auth/test', (req, res) => {
 		res.json(!!req.session.user);
 	});
 
 	return app;
-}
+};

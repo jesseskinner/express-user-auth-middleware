@@ -117,7 +117,6 @@ describe('middleware', () => {
 
 			// double check user is logged in
 			const resDoubleCheck = await axios.get('/auth/test', {
-				withCredentials: true,
 				jar
 			});
 			expect(resDoubleCheck.data).to.be.true;
@@ -199,6 +198,41 @@ describe('middleware', () => {
 
 			expect(resetRes.data).to.deep.equal({ success: true });
 			expect(loginRes.data).to.deep.equal({ success: true });
+		});
+	});
+
+	describe('/auth/logout', () => {
+		it('should clear the session', async () => {
+			const jar = new tough.CookieJar();
+
+			await axios.post(
+				'/auth/signup',
+				{
+					email,
+					password
+				},
+				{
+					jar
+				}
+			);
+
+			await axios.post(
+				'/auth/logout',
+				{},
+				{
+					jar
+				}
+			);
+
+			const res = await axios.get(
+				'/auth/test',
+				{},
+				{
+					jar
+				}
+			);
+
+			expect(res.data).to.be.false;
 		});
 	});
 });
