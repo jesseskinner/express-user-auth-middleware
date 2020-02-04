@@ -1,5 +1,5 @@
-import bcrypt from 'bcrypt';
-import { randomBytes } from 'crypto';
+const bcrypt = require('bcrypt');
+const { randomBytes } = require('crypto');
 
 const EMAIL_EXISTS = 'Email address already exists';
 
@@ -7,13 +7,13 @@ let database;
 let tableName = 'users';
 let saltRounds = 10;
 
-export function setOptions(o) {
+function setOptions(o) {
 	database = o.database || database;
 	tableName = o.tableName || tableName;
 	saltRounds = o.saltRounds || saltRounds;
 }
 
-export async function createTable() {
+async function createTable() {
 	return database.query(`
 		CREATE TABLE IF NOT EXISTS \`${tableName}\` (
 			id INT(11) AUTO_INCREMENT NOT NULL,
@@ -27,7 +27,7 @@ export async function createTable() {
 	`);
 }
 
-export async function createUser({ email, password }) {
+async function createUser({ email, password }) {
 	const [users] = await database.query(
 		`
 			SELECT id
@@ -55,7 +55,7 @@ export async function createUser({ email, password }) {
 	return res[0].insertId;
 }
 
-export async function verifyUser({ email, password }) {
+async function verifyUser({ email, password }) {
 	const [users] = await database.query(
 		`
 			SELECT id, password
@@ -76,7 +76,7 @@ export async function verifyUser({ email, password }) {
 	return false;
 }
 
-export async function getResetToken(email) {
+async function getResetToken(email) {
 	const token = (await randomBytes(16)).toString('hex');
 
 	await database.query(
@@ -91,7 +91,7 @@ export async function getResetToken(email) {
 	return token;
 }
 
-export async function resetPassword(email, token, password) {
+async function resetPassword(email, token, password) {
 	const [[user]] = await database.query(
 		`
 			SELECT id, token
@@ -119,3 +119,12 @@ export async function resetPassword(email, token, password) {
 
 	return false;
 }
+
+module.exports = {
+	setOptions,
+	createTable,
+	createUser,
+	verifyUser,
+	getResetToken,
+	resetPassword
+};

@@ -1,19 +1,19 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
 	setOptions,
 	createTable,
 	createUser,
 	verifyUser,
 	getResetToken,
 	resetPassword
-} from './auth.js';
+} = require('./auth.js');
 
-import session from 'express-session';
-import MySQLSessionStore from 'express-mysql-session';
+const session = require('express-session');
+const MySQLSessionStore = require('express-mysql-session');
 
 const MySQLStore = MySQLSessionStore(session);
 
-export default function UserAuthMiddleware({
+module.exports = function UserAuthMiddleware({
 	database,
 	tableName,
 	saltRounds,

@@ -1,10 +1,10 @@
-import { expect } from 'chai';
-import express from 'express';
-import axios from 'axios';
-import axiosCookieJarSupport from 'axios-cookiejar-support';
-import tough from 'tough-cookie';
-import getDatabase from './_database.js';
-import UserAuthMiddleware from '../src/middleware.js';
+const { expect } = require('chai');
+const express = require('express');
+const axios = require('axios');
+const axiosCookieJarSupport = require('axios-cookiejar-support').default;
+const tough = require('tough-cookie');
+const getDatabase = require('./_database.js');
+const UserAuthMiddleware = require('../src/middleware.js');
 
 axiosCookieJarSupport(axios);
 

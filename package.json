@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "src/middleware.js",
 	"scripts": {
-		"start": "node --require esm test/server.js",
-		"test": "mocha --require esm test/**/*.test.js"
+		"start": "node test/server.js",
+		"test": "mocha test/**/*.test.js"
 	},
 	"repository": {
 		"type": "git",

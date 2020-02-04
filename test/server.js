@@ -1,6 +1,6 @@
-import express from 'express';
-import getDatabase from './_database.js';
-import UserAuthMiddleware from '../src/middleware.js';
+const express = require('express');
+const getDatabase = require('./_database.js');
+const UserAuthMiddleware = require('../src/middleware.js');
 
 (async () => {
 	express()
