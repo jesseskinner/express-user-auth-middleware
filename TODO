@@ -1,14 +1,14 @@
 TODO:
-☐ A way to create new users
-☐ Some tie-in to a database
+✔ A way to create new users @done(20-02-04 11:29)
+✔ Some tie-in to a database @done(20-02-04 11:29)
     - How generic can/should we be? Should it just use MySQL or have callbacks or what?
-☐ Some web API
+✔ Some web API @done(20-02-04 11:29)
     - Rest? GraphQL? Form?
-☐ Login form
-☐ Signup form
-☐ Forgot password / password reset
-☐ Email validation
-☐ Sessions 
-    ☐ table in the database
-    ☐ tie session ID to user ID
-☐ Tests - Mocha
+✘ Login form @cancelled(20-02-04 11:29)
+✘ Signup form @cancelled(20-02-04 11:29)
+✔ Forgot password / password reset @done(20-02-04 13:33)
+✘ Email validation @cancelled(20-02-04 12:12)
+✔ Sessions @done(20-02-04 11:29)
+    ✔ table in the database @done(20-02-04 11:29)
+    ✔ tie session ID to user ID @done(20-02-04 11:29)
+✔ Tests - Mocha @done(20-02-04 11:29)

@@ -18,12 +18,12 @@ import UserAuthMiddleware from '../src/middleware.js';
                             verifyCode
                         );
                     },
-                    reset: (to, resetLink) => {
+                    reset: (to, resetCode) => {
                         console.log(
                             'TODO: send reset email to ',
                             to,
                             ' with link ',
-                            resetLink
+                            resetCode
                         );
                     }
                 }

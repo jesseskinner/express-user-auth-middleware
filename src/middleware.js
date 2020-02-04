@@ -1,5 +1,12 @@
 import express from 'express';
-import { setOptions, createTable, createUser, verifyUser } from './auth.js';
+import {
+	setOptions,
+	createTable,
+	createUser,
+	verifyUser,
+	getResetToken,
+	resetPassword
+} from './auth.js';
 
 import session from 'express-session';
 import MySQLSessionStore from 'express-mysql-session';
@@ -11,7 +18,8 @@ export default function UserAuthMiddleware({
 	tableName,
 	saltRounds,
 	secret,
-	clearExpired = true
+	clearExpired = true,
+	emailPasswordReset
 }) {
 	setOptions({ database, tableName, saltRounds });
 
@@ -69,6 +77,21 @@ export default function UserAuthMiddleware({
 		} else {
 			res.json({ error: true });
 		}
+	});
+
+	app.post('/auth/forgot', async (req, res) => {
+		const { email } = req.body;
+		const token = await getResetToken(email);
+
+		emailPasswordReset(email, token);
+
+		res.json({ success: true });
+	});
+
+	app.post('/auth/reset', async (req, res) => {
+		const { email, token, password } = req.body;
+
+		res.json({ success: await resetPassword(email, token, password) });
 	});
 
 	app.get('/auth/test', (req, res) => {

@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 
 const EMAIL_EXISTS = 'Email address already exists';
 
@@ -17,9 +18,8 @@ export async function createTable() {
 		CREATE TABLE IF NOT EXISTS \`${tableName}\` (
 			id INT(11) AUTO_INCREMENT NOT NULL,
 			email VARCHAR(255) NOT NULL,
-			password VARCHAR(255) NOT NULL,
-			token CHAR(32) NULL,
-			token_expires_at TIMESTAMP,
+			password CHAR(60) NOT NULL,
+			token CHAR(60) NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 			PRIMARY KEY (id),
 			UNIQUE (email)
@@ -71,6 +71,50 @@ export async function verifyUser({ email, password }) {
 
 	if (await bcrypt.compare(password, users[0].password)) {
 		return users[0].id;
+	}
+
+	return false;
+}
+
+export async function getResetToken(email) {
+	const token = (await randomBytes(16)).toString('hex');
+
+	await database.query(
+		`
+			UPDATE \`${tableName}\`
+			SET ?
+			WHERE ?
+		`,
+		[{ token: await bcrypt.hash(token, saltRounds) }, { email }]
+	);
+
+	return token;
+}
+
+export async function resetPassword(email, token, password) {
+	const [[user]] = await database.query(
+		`
+			SELECT id, token
+			FROM \`${tableName}\`
+			WHERE ?
+		`,
+		{ email }
+	);
+
+	if (user && (await bcrypt.compare(token, user.token))) {
+		await database.query(
+			`
+				UPDATE \`${tableName}\`
+				SET ?
+				WHERE ?
+			`,
+			[
+				{ password: await bcrypt.hash(password, saltRounds) },
+				{ id: user.id }
+			]
+		);
+
+		return true;
 	}
 
 	return false;

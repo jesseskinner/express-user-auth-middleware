@@ -12,7 +12,7 @@ const email = 'abc@example.com';
 const password = 'abc';
 
 describe('middleware', () => {
-	let database, server;
+	let database, server, resetCallback;
 
 	beforeEach(async () => {
 		database = await getDatabase();
@@ -25,7 +25,10 @@ describe('middleware', () => {
 				new UserAuthMiddleware({
 					database,
 					secret: 'SECRET',
-					clearExpired: false
+					clearExpired: false,
+					emailPasswordReset: (to, resetCode) => {
+						resetCallback(to, resetCode);
+					}
 				})
 			)
 			.listen();
@@ -37,6 +40,7 @@ describe('middleware', () => {
 	afterEach(async () => {
 		await database.end();
 		server.close();
+		resetCallback = null;
 	});
 
 	describe('/auth/signup', () => {
@@ -140,6 +144,61 @@ describe('middleware', () => {
 			});
 
 			expect(data).to.deep.equal({ error: true });
+		});
+	});
+
+	describe('/auth/reset & /auth/forgot', () => {
+		it('should send an email with a reset code', async () => {
+			let to, resetCode;
+
+			await axios.post('/auth/signup', {
+				email,
+				password
+			});
+
+			resetCallback = (_to, _resetCode) => {
+				to = _to;
+				resetCode = _resetCode;
+			};
+
+			await axios.post('/auth/forgot', {
+				email
+			});
+
+			expect(to).to.equal(email);
+			expect(resetCode).to.be.a('string');
+			expect(resetCode.length).to.equal(32);
+		});
+
+		it('should change the password with a valid token', async () => {
+			let resetCode;
+
+			await axios.post('/auth/signup', {
+				email,
+				password
+			});
+
+			resetCallback = (_to, _resetCode) => {
+				resetCode = _resetCode;
+			};
+
+			await axios.post('/auth/forgot', {
+				email
+			});
+
+			const resetRes = await axios.post('/auth/reset', {
+				email,
+				token: resetCode,
+				password: 'new password'
+			});
+
+			const loginRes = await axios.post('/auth/login', {
+				email,
+				password: 'new password'
+			});
+
+			expect(resetRes.data).to.deep.equal({ success: true });
+			expect(loginRes.data).to.deep.equal({ success: true });
 		});
 	});
 });
