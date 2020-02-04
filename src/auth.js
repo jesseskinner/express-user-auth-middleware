@@ -105,7 +105,7 @@ async function resetPassword(email, token, password) {
 		{ email }
 	);
 
-	if (user && (await bcrypt.compare(token, user.token))) {
+	if (user && user.token && (await bcrypt.compare(token, user.token))) {
 		await database.query(
 			`
 				UPDATE \`${tableName}\`
@@ -113,7 +113,10 @@ async function resetPassword(email, token, password) {
 				WHERE ?
 			`,
 			[
-				{ password: await bcrypt.hash(password, saltRounds) },
+				{
+					password: await bcrypt.hash(password, saltRounds),
+					token: null
+				},
 				{ id: user.id }
 			]
 		);

@@ -97,7 +97,11 @@ module.exports = function UserAuthMiddleware({
 	app.post('/auth/reset', async (req, res) => {
 		const { email, token, password } = req.body;
 
-		res.json({ success: await resetPassword(email, token, password) });
+		if (await resetPassword(email, token, password)) {
+			res.json({ success: true });
+		} else {
+			res.json({ error: 'Invalid token or email address.' });
+		}
 	});
 
 	app.post('/auth/logout', (req, res) => {

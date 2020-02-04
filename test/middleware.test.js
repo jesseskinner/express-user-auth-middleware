@@ -173,7 +173,7 @@ describe('middleware', () => {
 			expect(resetCode.length).to.equal(32);
 		});
 
-		it('should change the password with a valid token', async () => {
+		it('should change the password once with a valid token', async () => {
 			let resetCode;
 
 			await axios.post('/auth/signup', {
@@ -200,8 +200,17 @@ describe('middleware', () => {
 				password: 'new password'
 			});
 
+			const resetAgainRes = await axios.post('/auth/reset', {
+				email,
+				token: resetCode,
+				password: 'new password'
+			});
+
 			expect(resetRes.data).to.deep.equal({ success: true });
 			expect(loginRes.data).to.deep.equal({ success: true });
+			expect(resetAgainRes.data).to.deep.equal({
+				error:'Invalid token or email address.'
+			})
 		});
 
 		it('should return an error if email is unknown', async () => {
@@ -213,6 +222,16 @@ describe('middleware', () => {
 				error: 'Email address not found.'
 			});
 		});
+
+		it('should return an error if token is invalid', async () => {
+			const res = await axios.post('/auth/reset', {
+				email,
+				password,
+				token: 'invalid'
+			});
+
+			expect(res.data).to.deep.equal({error:'Invalid token or email address.'})
+		})
 	});
 
 	describe('/auth/logout', () => {
