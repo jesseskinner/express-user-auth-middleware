@@ -77,13 +77,17 @@ module.exports = function UserAuthMiddleware({
 			req.session.user = { id, email };
 			res.json({ success: true });
 		} else {
-			res.json({ error: true });
+			res.json({ error: 'Incorrect email or password.' });
 		}
 	});
 
 	app.post('/auth/forgot', async (req, res) => {
 		const { email } = req.body;
 		const token = await getResetToken(email);
+
+		if (!token) {
+			return res.json({ error: 'Email address not found.' });
+		}
 
 		emailPasswordReset(email, token);
 

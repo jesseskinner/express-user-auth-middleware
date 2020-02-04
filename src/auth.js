@@ -79,7 +79,7 @@ async function verifyUser({ email, password }) {
 async function getResetToken(email) {
 	const token = (await randomBytes(16)).toString('hex');
 
-	await database.query(
+	const [{ affectedRows }] = await database.query(
 		`
 			UPDATE \`${tableName}\`
 			SET ?
@@ -87,6 +87,10 @@ async function getResetToken(email) {
 		`,
 		[{ token: await bcrypt.hash(token, saltRounds) }, { email }]
 	);
+
+	if (!affectedRows) {
+		return false;
+	}
 
 	return token;
 }

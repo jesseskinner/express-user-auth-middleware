@@ -133,7 +133,9 @@ describe('middleware', () => {
 				password: 'not the right one'
 			});
 
-			expect(data).to.deep.equal({ error: true });
+			expect(data).to.deep.equal({
+				error: 'Incorrect email or password.'
+			});
 		});
 
 		it('should return an error if the email is unknown', async () => {
@@ -142,7 +144,9 @@ describe('middleware', () => {
 				password
 			});
 
-			expect(data).to.deep.equal({ error: true });
+			expect(data).to.deep.equal({
+				error: 'Incorrect email or password.'
+			});
 		});
 	});
 
@@ -198,6 +202,16 @@ describe('middleware', () => {
 
 			expect(resetRes.data).to.deep.equal({ success: true });
 			expect(loginRes.data).to.deep.equal({ success: true });
+		});
+
+		it('should return an error if email is unknown', async () => {
+			const res = await axios.post('/auth/forgot', {
+				email: 'not@a.real.one'
+			});
+
+			expect(res.data).to.deep.equal({
+				error: 'Email address not found.'
+			});
 		});
 	});
 
