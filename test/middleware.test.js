@@ -13,17 +13,20 @@ describe('middleware', () => {
 	beforeEach(async () => {
 		database = await getDatabase();
 
+		await database.query('DROP TABLE users');
+		await database.query('DROP TABLE sessions');
+
 		server = express()
 			.use(
 				new UserAuthMiddleware({
-					database
+					database,
+					secret: 'SECRET'
 				})
 			)
 			.listen();
 
-		await database.query('TRUNCATE TABLE users');
-
 		axios.defaults.baseURL = `http://0.0.0.0:${server.address().port}`;
+		axios.defaults.withCredentials = true;
 	});
 
 	afterEach(async () => {
@@ -38,7 +41,12 @@ describe('middleware', () => {
 				password
 			});
 
+			expect(res.headers['set-cookie']).to.not.be.undefined;
 			expect(res.data).to.deep.equal({ success: true });
+
+			// double check user is logged in
+			const resDoubleCheck = await axios.get('/auth/test');
+			expect(resDoubleCheck.data).to.be.true;
 		});
 
 		it('should fail if an email address is empty', async () => {
@@ -81,7 +89,14 @@ describe('middleware', () => {
 				password
 			});
 
+			expect(res.headers['set-cookie']).to.not.be.undefined;
 			expect(res.data).to.deep.equal({ success: true });
+
+			// double check user is logged in
+			const resDoubleCheck = await axios.get('/auth/test', {
+				withCredentials: true
+			});
+			expect(resDoubleCheck.data).to.be.true;
 		});
 
 		it('should return an error if the password does not match', async () => {
@@ -106,5 +121,5 @@ describe('middleware', () => {
 
 			expect(data).to.deep.equal({ error: true });
 		});
-	})
+	});
 });

@@ -43,7 +43,7 @@
 				const { success, error } = await res.json();
 
 				if (success) {
-					location.href = 'thanks.html';
+					alert('Thanks!');
 				} else if (error) {
 					document.querySelector('.error').innerText = error;
 				}

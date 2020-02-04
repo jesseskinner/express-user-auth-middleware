@@ -8,6 +8,7 @@ import UserAuthMiddleware from '../src/middleware.js';
 			express.static('test/html'),
 			new UserAuthMiddleware({
                 database: await getDatabase(),
+                secret: 'SECRET',
                 email: {
                     verify: (to, verifyCode) => {
                         console.log(
