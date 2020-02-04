@@ -6,8 +6,14 @@ import MySQLSessionStore from 'express-mysql-session';
 
 const MySQLStore = MySQLSessionStore(session);
 
-export default function UserAuthMiddleware(options) {
-	setOptions(options);
+export default function UserAuthMiddleware({
+	database,
+	tableName,
+	saltRounds,
+	secret,
+	clearExpired = true
+}) {
+	setOptions({ database, tableName, saltRounds });
 
 	createTable();
 
@@ -16,8 +22,8 @@ export default function UserAuthMiddleware(options) {
 	app.use(
 		session({
 			key: 'sid',
-			secret: options.secret,
-			store: new MySQLStore({}, options.database),
+			secret: secret,
+			store: new MySQLStore({ clearExpired }, database),
 			resave: false,
 			saveUninitialized: false
 		}),
@@ -66,7 +72,6 @@ export default function UserAuthMiddleware(options) {
 	});
 
 	app.get('/auth/test', (req, res) => {
-		console.log(req.session);
 		res.json(!!req.session.user);
 	});
 

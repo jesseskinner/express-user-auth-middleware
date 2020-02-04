@@ -1,8 +1,12 @@
 import { expect } from 'chai';
 import express from 'express';
 import axios from 'axios';
+import axiosCookieJarSupport from 'axios-cookiejar-support';
+import tough from 'tough-cookie';
 import getDatabase from './_database.js';
 import UserAuthMiddleware from '../src/middleware.js';
+
+axiosCookieJarSupport(axios);
 
 const email = 'abc@example.com';
 const password = 'abc';
@@ -13,14 +17,15 @@ describe('middleware', () => {
 	beforeEach(async () => {
 		database = await getDatabase();
 
-		await database.query('DROP TABLE users');
-		await database.query('DROP TABLE sessions');
+		await database.query('DROP TABLE IF EXISTS users');
+		await database.query('DROP TABLE IF EXISTS sessions');
 
 		server = express()
 			.use(
 				new UserAuthMiddleware({
 					database,
-					secret: 'SECRET'
+					secret: 'SECRET',
+					clearExpired: false
 				})
 			)
 			.listen();
@@ -36,16 +41,24 @@ describe('middleware', () => {
 
 	describe('/auth/signup', () => {
 		it('should create a user', async () => {
-			const res = await axios.post('/auth/signup', {
-				email,
-				password
-			});
+			const jar = new tough.CookieJar();
+
+			const res = await axios.post(
+				'/auth/signup',
+				{
+					email,
+					password
+				},
+				{
+					jar
+				}
+			);
 
 			expect(res.headers['set-cookie']).to.not.be.undefined;
 			expect(res.data).to.deep.equal({ success: true });
 
 			// double check user is logged in
-			const resDoubleCheck = await axios.get('/auth/test');
+			const resDoubleCheck = await axios.get('/auth/test', { jar });
 			expect(resDoubleCheck.data).to.be.true;
 		});
 
@@ -79,10 +92,16 @@ describe('middleware', () => {
 
 	describe('/auth/login', () => {
 		it('should return success if the email and password matches', async () => {
-			await axios.post('/auth/signup', {
-				email,
-				password
-			});
+			const jar = new tough.CookieJar();
+
+			await axios.post(
+				'/auth/signup',
+				{
+					email,
+					password
+				},
+				{ jar }
+			);
 
 			const res = await axios.post('/auth/login', {
 				email,
@@ -94,7 +113,8 @@ describe('middleware', () => {
 
 			// double check user is logged in
 			const resDoubleCheck = await axios.get('/auth/test', {
-				withCredentials: true
+				withCredentials: true,
+				jar
 			});
 			expect(resDoubleCheck.data).to.be.true;
 		});

@@ -20,9 +20,11 @@
 	"homepage": "https://github.com/jesseskinner/express-user-auth-middleware#readme",
 	"devDependencies": {
 		"axios": "^0.19.2",
+		"axios-cookiejar-support": "^0.5.1",
 		"chai": "^4.2.0",
 		"esm": "^3.2.25",
-		"mocha": "^7.0.0"
+		"mocha": "^7.0.0",
+		"tough-cookie": "^3.0.1"
 	},
 	"dependencies": {
 		"bcrypt": "^3.0.7",
